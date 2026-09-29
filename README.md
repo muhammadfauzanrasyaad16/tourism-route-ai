@@ -160,7 +160,17 @@ Backend berjalan di `http://127.0.0.1:8000`.
 
 **5. Buka frontend**
 
-Buka `frontend/index.html` di browser (klik dua kali atau dengan Live Server). Backend harus sudah berjalan. Frontend memuat Leaflet dan tile peta OpenStreetMap dari internet, jadi koneksi internet dibutuhkan untuk menampilkan peta.
+Jalankan server statis untuk folder `frontend` di terminal kedua (biarkan backend tetap berjalan di terminal pertama):
+
+```powershell
+.\.venv\Scripts\python.exe -m http.server 5500 --directory frontend
+```
+
+Lalu buka `http://127.0.0.1:5500` di browser.
+
+Jangan membuka `frontend/index.html` langsung dengan klik dua kali (`file://`): tile peta OpenStreetMap ditolak dengan error 403 (Access blocked) dan peta tidak tampil. Jika Windows menampilkan dialog firewall untuk Python, pilih Allow access pada jaringan Private.
+
+Frontend memuat Leaflet dan tile OpenStreetMap dari internet, jadi koneksi internet dibutuhkan untuk menampilkan peta.
 
 ### Cara memakai
 
