@@ -1,0 +1,96 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "geraikita": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Geraikita AI",
+      "options": {
+        "baseURL": "https://ai.geraikita.com/v1",
+        "apiKey": "{env:GERAIKITA_API_KEY}"
+      },
+      "models": {
+
+        "claude-opus-5-5-token": {
+          "name": "Claude Opus 5.5"
+        },
+
+
+        "claude-opus-5": {
+          "name": "Claude Opus 5"
+        },
+        "claude-opus-4-8": {
+          "name": "Claude Opus 4.8"
+        },
+        "claude-opus-4-6": {
+          "name": "Claude Opus 4.6"
+        },
+        "claude-opus-4-7": {
+          "name": "Claude Opus 4.7"
+        },
+        "claude-sonnet-5": {
+          "name": "Claude Sonnet 5"
+        },
+        "claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6"
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5"
+        },
+        "deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro"
+        },
+        "deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash"
+        },
+        "glm-5.1": {
+          "name": "GLM-5.1"
+        },
+        "glm-5-turbo": {
+          "name": "GLM-5 Turbo"
+        },
+        "glm-5.3": {
+          "name": "GLM 5.3"
+        },
+        "glm-5.2": {
+          "name": "GLM 5.2"
+        },
+        "gpt-5.4": {
+          "name": "GPT 5.4"
+        },
+        "gpt-5.5": {
+          "name": "GPT 5.5"
+        },
+        "gpt-5.5-xhigh": {
+          "name": "GPT 5.5 xhigh"
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT 5.6 Luna"
+        },
+        "gpt-5.6-sol": {
+          "name": "GPT 5.6 Sol"
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT 5.6 Terra"
+        },
+        "qwen-max": {
+          "name": "Qwen3 Max"
+        },
+        "qwen-plus": {
+          "name": "Qwen3 Plus"
+        },
+        "qwen-flash": {
+          "name": "Qwen3 Flash"
+        },
+        "qwen-coder-plus": {
+          "name": "Qwen3 Coder Plus"
+        },
+        "kimi-k2.7-code": {
+          "name": "Kimi K2.7 Code"
+        },
+        "kimi-k3": {
+          "name": "Kimi K3"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+# Versi = kondisi riil mesin dev (Python 3.14, Windows) per 26 Sep 2026.
+# osmnx/geopandas/shapely hanya dipakai untuk load graphml & snapping —
+# TIDAK ada network call saat runtime (graph/diy_road_network.graphml final).
+osmnx==2.1.1
+networkx==3.7
+pandas==3.0.6
+numpy==2.5.3
+geopandas==1.1.4
+shapely==2.1.2
+requests==2.34.2
+
+# Backend API
+fastapi==0.141.1
+uvicorn==0.54.0

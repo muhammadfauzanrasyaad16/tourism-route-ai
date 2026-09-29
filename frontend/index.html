@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIY Tourism Route Planner — A* vs Dijkstra</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <h1>DIY Tourism Route Planner</h1>
+      <p class="subtitle">Hotel di Kota Yogyakarta &rarr; maks. 3 destinasi berurutan (A* / Dijkstra)</p>
+
+      <div class="field">
+        <label for="hotel-select">Hotel (Kota Yogyakarta)</label>
+        <select id="hotel-select" disabled>
+          <option value="">Memuat data...</option>
+        </select>
+        <div id="hotel-info" class="snap-info"></div>
+      </div>
+
+      <fieldset class="dest-group">
+        <legend>Destinasi (urut kunjungan)</legend>
+        <div class="field">
+          <label for="dest-1">1. Destinasi pertama</label>
+          <select id="dest-1" disabled><option value="">Memuat data...</option></select>
+          <div id="dest-1-info" class="snap-info"></div>
+        </div>
+        <div class="field">
+          <label for="dest-2">2. Destinasi kedua <span class="optional">(opsional)</span></label>
+          <select id="dest-2" disabled><option value="">Memuat data...</option></select>
+          <div id="dest-2-info" class="snap-info"></div>
+        </div>
+        <div class="field">
+          <label for="dest-3">3. Destinasi ketiga <span class="optional">(opsional)</span></label>
+          <select id="dest-3" disabled><option value="">Memuat data...</option></select>
+          <div id="dest-3-info" class="snap-info"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Algoritma</legend>
+        <label class="radio"><input type="radio" name="algorithm" value="astar" checked /> A* (Haversine)</label>
+        <label class="radio"><input type="radio" name="algorithm" value="dijkstra" /> Dijkstra (baseline)</label>
+      </fieldset>
+
+      <button id="search-btn" disabled>Cari Rute</button>
+      <div id="status" class="status"></div>
+
+      <section id="stats" class="stats hidden">
+        <h2>Statistik rute</h2>
+        <dl>
+          <div><dt>Total jarak</dt><dd id="stat-distance">—</dd></div>
+          <div><dt>Waktu pencarian</dt><dd id="stat-time">—</dd></div>
+          <div><dt>Node dieksplorasi</dt><dd id="stat-explored">—</dd></div>
+          <div><dt>Algoritma</dt><dd id="stat-algorithm">—</dd></div>
+        </dl>
+        <ol id="leg-list"></ol>
+      </section>
+
+      <section class="legend-box">
+        <h2>Keterangan tier akses</h2>
+        <ul class="tier-legend">
+          <li><span class="dot ok"></span> <code>ok</code> — jalan &le; 100 m dari titik</li>
+          <li><span class="dot offset"></span> <code>offset</code> — jalan 100 m – 1 km</li>
+          <li><span class="dot limited"></span> <code>limited</code> — &gt; 1 km, praktis tanpa jalan (pantai tebing, summit)</li>
+        </ul>
+        <p class="note">Semua 209 destinasi tetap bisa dipilih — tier hanya peringatan bahwa rute berakhir di node jalan terdekat, bukan tepat di lokasinya.</p>
+      </section>
+    </aside>
+
+    <main id="map"></main>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="app.js"></script>
+</body>
+</html>
