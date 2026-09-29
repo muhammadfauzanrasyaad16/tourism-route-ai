@@ -12,3 +12,5 @@ requests==2.34.2
 # Backend API
 fastapi==0.141.1
 uvicorn==0.54.0
+
+scikit-learn==1.9.1
