@@ -236,12 +236,12 @@ Setiap skenario dijalankan 10 kali per algoritma pada satu mesin (Windows, Pytho
 
 | Destinasi | Algoritma | Jarak (m) | Waktu (ms) | Std. dev. (ms) | Node dieksplorasi |
 |---:|---|---:|---:|---:|---:|
-| 1 | A\* | 17.030,56 | 61,98 | 1,27 | 7.652 |
-| 1 | Dijkstra | 17.030,56 | 573,30 | 15,32 | 80.340 |
-| 2 | A\* | 22.648,37 | 71,23 | 0,88 | 8.777 |
-| 2 | Dijkstra | 22.648,37 | 589,23 | 12,11 | 84.013 |
-| 3 | A\* | 26.007,28 | 73,10 | 1,24 | 8.957 |
-| 3 | Dijkstra | 26.007,28 | 594,55 | 16,44 | 84.712 |
+| 1 | A\* | 17.030,56 | 117,15 | 4,98 | 7.652 |
+| 1 | Dijkstra | 17.030,56 | 1.076,75 | 46,66 | 80.340 |
+| 2 | A\* | 22.648,37 | 131,50 | 2,43 | 8.777 |
+| 2 | Dijkstra | 22.648,37 | 1.095,10 | 23,54 | 84.013 |
+| 3 | A\* | 26.007,28 | 132,72 | 3,45 | 8.957 |
+| 3 | Dijkstra | 26.007,28 | 1.103,83 | 8,46 | 84.712 |
 
 Pada ketiga skenario, A\* dan Dijkstra menghasilkan jarak yang sama. A\* mengeksplorasi sekitar 89–90% lebih sedikit node dan waktu pencariannya sekitar 88–89% lebih rendah. Hasil ini berlaku untuk skenario di atas dan tidak dimaksudkan sebagai klaim bahwa A\* selalu lebih cepat untuk semua pasangan titik. Waktu eksekusi juga bergantung pada spesifikasi mesin.
 
