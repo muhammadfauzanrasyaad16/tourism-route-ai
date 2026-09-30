@@ -1,6 +1,6 @@
 # Implementasi Algoritma A\* untuk Pencarian Rute Kunjungan Wisata dari Penginapan di Yogyakarta
 
-Aplikasi web untuk mencari rute dari sebuah penginapan ke maksimal tiga destinasi wisata di Daerah Istimewa Yogyakarta (DIY), menggunakan jaringan jalan nyata dari OpenStreetMap. Algoritma utamanya adalah **A\*** dengan heuristik **Haversine** yang diimplementasikan secara manual, dibandingkan dengan **Dijkstra** sebagai baseline.
+Aplikasi web untuk mencari rute dari sebuah penginapan ke maksimal tiga destinasi wisata di Daerah Istimewa Yogyakarta (DIY), menggunakan jaringan jalan nyata dari OpenStreetMap. Algoritma utamanya adalah **A\*** dengan heuristik **Haversine** yang diimplementasikan secara manual. Dijkstra tersedia sebagai validasi opsional pada rute yang sama.
 
 Proyek ini dibuat sebagai final project mata kuliah Artificial Intelligence.
 
@@ -12,7 +12,8 @@ Proyek ini dibuat sebagai final project mata kuliah Artificial Intelligence.
 
 - Memilih 1 hotel (dari 551 hotel) sebagai titik awal.
 - Memilih 1 sampai 3 destinasi (dari 209 destinasi wisata) dalam urutan kunjungan yang ditentukan pengguna.
-- Memilih algoritma: A\* (Haversine) atau Dijkstra (baseline).
+- Menghitung rute utama dengan A\* (Haversine).
+- Memvalidasi rute yang sama dengan Dijkstra secara opsional.
 - Rute ditampilkan di peta Leaflet, satu warna per leg perjalanan.
 - Statistik hasil pencarian: total jarak, waktu pencarian, jumlah node yang dieksplorasi.
 - Penanda kualitas akses (`ok`, `offset`, `limited`) untuk titik yang jauh dari jalan.
@@ -60,7 +61,7 @@ f(n) = g(n) + h(n)
 
 dengan `h(n)` berupa jarak Haversine (great-circle, R = 6.371.000 m) dari node `n` ke node goal. Implementasi manual di `algorithms/astar.py` memakai `heapq` sebagai open set, `closed_set`, `g_score`, `f_score`, dan `came_from`, tanpa memanggil `nx.astar_path()` maupun `nx.dijkstra_path()`.
 
-**Dijkstra** (`algorithms/dijkstra.py`) adalah mesin pencarian yang sama dengan `h(n) = 0`. Dengan begitu perbandingan A\* vs Dijkstra berjalan di atas kode, graf, dan tie-breaker yang identik, sehingga perbedaan hasil berasal dari heuristik.
+**Dijkstra** (`algorithms/dijkstra.py`) adalah mesin pencarian yang sama dengan `h(n) = 0`. Frontend menjalankannya hanya ketika pengguna meminta validasi, sehingga perbandingan tetap memakai kode, graf, dan tie-breaker yang identik.
 
 **Snapping** (`routing/snapping.py`): koordinat hotel/destinasi dipetakan ke node terdekat dengan `osmnx.distance.nearest_nodes()` (batch saat startup backend), lalu jarak snap dihitung dan diklasifikasikan:
 
@@ -170,14 +171,14 @@ Lalu buka `http://127.0.0.1:5500` di browser.
 
 Jangan membuka `frontend/index.html` langsung dengan klik dua kali (`file://`): tile peta OpenStreetMap ditolak dengan error 403 (Access blocked) dan peta tidak tampil. Jika Windows menampilkan dialog firewall untuk Python, pilih Allow access pada jaringan Private.
 
-Frontend memuat Leaflet dan tile OpenStreetMap dari internet, jadi koneksi internet dibutuhkan untuk menampilkan peta.
+Frontend memuat Leaflet dan tile CARTO Voyager dari internet, jadi koneksi internet dibutuhkan untuk menampilkan peta. Attribution CARTO dan OpenStreetMap ditampilkan di sudut peta.
 
 ### Cara memakai
 
 1. Pilih hotel.
 2. Pilih destinasi pertama, lalu (opsional) kedua dan ketiga.
-3. Pilih algoritma: **A\* (Haversine)** atau **Dijkstra (baseline)**.
-4. Klik **Cari Rute**.
+3. Klik **Cari Rute** untuk menghitung rute A\*.
+4. Gunakan **Validasi dengan Dijkstra** bila ingin membandingkan rute yang sama.
 
 <!-- Screenshot: tambahkan gambar ke docs/screenshots/ lalu tampilkan di sini, mis.
 ![Hasil rute 3 destinasi](docs/screenshots/route-3-destinations.png)

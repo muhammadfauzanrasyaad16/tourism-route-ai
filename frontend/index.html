@@ -3,81 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DIY Tourism Route Planner — A* vs Dijkstra</title>
+  <title>Pencarian Rute Wisata DIY — A* Haversine</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  />
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""
   />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
-  <div id="app">
-    <aside id="panel">
-      <h1>DIY Tourism Route Planner</h1>
-      <p class="subtitle">Hotel di Kota Yogyakarta &rarr; maks. 3 destinasi berurutan (A* / Dijkstra)</p>
+  <div class="app">
+    <aside class="panel" aria-label="Perencana rute">
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/></svg>
+        </div>
+        <div>
+          <h1>Rute Wisata DIY</h1>
+          <p class="brand-sub">Pencarian rute A* dengan heuristic Haversine pada jaringan jalan Yogyakarta</p>
+        </div>
+      </header>
 
-      <div class="field">
-        <label for="hotel-select">Hotel (Kota Yogyakarta)</label>
-        <select id="hotel-select" disabled>
-          <option value="">Memuat data...</option>
-        </select>
-        <div id="hotel-info" class="snap-info"></div>
+      <div class="panel-scroll">
+        <section class="block" aria-labelledby="h-plan">
+          <h2 id="h-plan" class="block-title">Rencana perjalanan</h2>
+
+          <ol class="itinerary">
+            <li class="stop stop-origin">
+              <span class="stop-pin pin-origin" aria-hidden="true">H</span>
+              <div class="stop-body">
+                <label class="stop-label" for="hotel-input">Berangkat dari hotel</label>
+                <div class="combo" data-combo="hotel">
+                  <svg class="combo-icon" aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                  <input id="hotel-input" class="combo-input" type="text" role="combobox"
+                    aria-autocomplete="list" aria-expanded="false" aria-controls="hotel-list"
+                    placeholder="Memuat data hotel…" autocomplete="off" disabled />
+                  <ul id="hotel-list" class="combo-list" role="listbox" aria-label="Daftar hotel" hidden></ul>
+                </div>
+                <p id="hotel-meta" class="stop-meta"></p>
+              </div>
+            </li>
+          </ol>
+
+          <ol id="stops" class="itinerary itinerary-stops" aria-label="Destinasi, urut kunjungan"></ol>
+
+          <div id="add-stop" class="add-stop">
+            <span class="stop-pin pin-add" aria-hidden="true">+</span>
+            <div class="stop-body">
+              <label class="stop-label" for="dest-input"><span id="add-stop-label">Destinasi pertama</span> <span id="add-stop-count" class="muted"></span></label>
+              <div class="combo" data-combo="dest">
+                <svg class="combo-icon" aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input id="dest-input" class="combo-input" type="text" role="combobox"
+                  aria-autocomplete="list" aria-expanded="false" aria-controls="dest-list"
+                  placeholder="Memuat data destinasi…" autocomplete="off" disabled />
+                <ul id="dest-list" class="combo-list" role="listbox" aria-label="Daftar destinasi" hidden></ul>
+              </div>
+              <p class="hint">Cari nama, kategori, atau kabupaten &mdash; atau klik titik di peta.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="results" class="block results" aria-labelledby="h-results" hidden>
+          <div class="results-head">
+            <h2 id="h-results" class="block-title">Hasil rute</h2>
+            <span id="result-algo" class="chip"></span>
+          </div>
+          <p id="stale-note" class="stale-note" hidden>Rencana berubah &mdash; cari ulang untuk memperbarui hasil.</p>
+
+          <div class="metrics">
+            <div class="metric metric-primary">
+              <span class="metric-label">Total jarak</span>
+              <span class="metric-value"><span id="stat-distance">—</span><small>km</small></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Waktu pencarian</span>
+              <span class="metric-value"><span id="stat-time">—</span><small>ms</small></span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Node dieksplorasi</span>
+              <span class="metric-value"><span id="stat-explored">—</span></span>
+            </div>
+          </div>
+
+          <ol id="leg-list" class="legs"></ol>
+
+          <div class="compare">
+            <button id="compare-btn" type="button" class="btn btn-ghost">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg>
+              <span id="compare-label">Validasi dengan Dijkstra</span>
+            </button>
+            <p class="hint">Mode validasi opsional — Dijkstra (h(n) = 0) dijalankan pada rute yang sama sebagai pembanding.</p>
+            <div id="compare-table" class="compare-table" hidden></div>
+          </div>
+        </section>
       </div>
 
-      <fieldset class="dest-group">
-        <legend>Destinasi (urut kunjungan)</legend>
-        <div class="field">
-          <label for="dest-1">1. Destinasi pertama</label>
-          <select id="dest-1" disabled><option value="">Memuat data...</option></select>
-          <div id="dest-1-info" class="snap-info"></div>
-        </div>
-        <div class="field">
-          <label for="dest-2">2. Destinasi kedua <span class="optional">(opsional)</span></label>
-          <select id="dest-2" disabled><option value="">Memuat data...</option></select>
-          <div id="dest-2-info" class="snap-info"></div>
-        </div>
-        <div class="field">
-          <label for="dest-3">3. Destinasi ketiga <span class="optional">(opsional)</span></label>
-          <select id="dest-3" disabled><option value="">Memuat data...</option></select>
-          <div id="dest-3-info" class="snap-info"></div>
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Algoritma</legend>
-        <label class="radio"><input type="radio" name="algorithm" value="astar" checked /> A* (Haversine)</label>
-        <label class="radio"><input type="radio" name="algorithm" value="dijkstra" /> Dijkstra (baseline)</label>
-      </fieldset>
-
-      <button id="search-btn" disabled>Cari Rute</button>
-      <div id="status" class="status"></div>
-
-      <section id="stats" class="stats hidden">
-        <h2>Statistik rute</h2>
-        <dl>
-          <div><dt>Total jarak</dt><dd id="stat-distance">—</dd></div>
-          <div><dt>Waktu pencarian</dt><dd id="stat-time">—</dd></div>
-          <div><dt>Node dieksplorasi</dt><dd id="stat-explored">—</dd></div>
-          <div><dt>Algoritma</dt><dd id="stat-algorithm">—</dd></div>
-        </dl>
-        <ol id="leg-list"></ol>
-      </section>
-
-      <section class="legend-box">
-        <h2>Keterangan tier akses</h2>
-        <ul class="tier-legend">
-          <li><span class="dot ok"></span> <code>ok</code> — jalan &le; 100 m dari titik</li>
-          <li><span class="dot offset"></span> <code>offset</code> — jalan 100 m – 1 km</li>
-          <li><span class="dot limited"></span> <code>limited</code> — &gt; 1 km, praktis tanpa jalan (pantai tebing, summit)</li>
-        </ul>
-        <p class="note">Semua 209 destinasi tetap bisa dipilih — tier hanya peringatan bahwa rute berakhir di node jalan terdekat, bukan tepat di lokasinya.</p>
-      </section>
+      <footer class="panel-foot">
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <button id="search-btn" type="button" class="btn btn-primary" disabled>
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-label">Cari rute</span>
+        </button>
+      </footer>
     </aside>
 
-    <main id="map"></main>
+    <main class="map-wrap">
+      <div id="map" aria-label="Peta rute"></div>
+
+      <details class="map-legend" open>
+        <summary>Akses jalan</summary>
+        <ul>
+          <li><span class="tier-dot ok" aria-hidden="true"></span><b>Baik</b> jalan &le; 100 m</li>
+          <li><span class="tier-dot offset" aria-hidden="true"></span><b>Offset</b> 100 m – 1 km</li>
+          <li><span class="tier-dot limited" aria-hidden="true"></span><b>Terbatas</b> &gt; 1 km</li>
+        </ul>
+        <p>Rute berakhir di node jalan terdekat, bukan tepat di lokasi. Semua destinasi tetap bisa dipilih.</p>
+      </details>
+    </main>
   </div>
 
   <script
@@ -85,6 +135,6 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
