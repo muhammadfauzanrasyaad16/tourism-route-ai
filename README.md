@@ -4,7 +4,11 @@ Aplikasi web untuk mencari rute dari sebuah penginapan ke maksimal tiga destinas
 
 Proyek ini dibuat sebagai final project mata kuliah Artificial Intelligence.
 
-**Penulis:** Muhammad Fauzan Rasyaad
+**Nama Anggota, NIM:**
+
+- Muhammad Fauzan Rasyaad — 23/519864/TK/57281
+- Muhammad Wildan Wilhamdi — 23/518666/TK/57133
+- Nafil Nissano Yogma Pratama — 23/521136/TK/57475
 
 ---
 
