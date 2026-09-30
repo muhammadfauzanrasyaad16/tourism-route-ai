@@ -17,6 +17,11 @@ from algorithms.heuristics import haversine_nodes
 
 from routing.snapping import snap_to_nearest_node
 
+try:
+    from shapely import wkt as shapely_wkt
+except ImportError:  # pragma: no cover - shapely is part of the runtime requirements
+    shapely_wkt = None
+
 MAX_DESTINATIONS = 3
 
 
@@ -35,6 +40,45 @@ _SEARCHERS = {"astar": _search_astar, "dijkstra": dijkstra}
 
 def _default_label(lat, lon) -> str:
     return f"{lat:.5f},{lon:.5f}"
+
+
+def _edge_path_coords(G, path_nodes: list) -> list[list[float]]:
+    """Expand node path into [lat, lon] coordinates following edge geometry.
+
+    A node-only polyline cuts across bends between intersections. OSMnx stores
+    the actual road shape in each edge's ``geometry`` attribute, so include
+    those intermediate points in the response path. For parallel edges, use
+    the shortest edge, matching the cost model used by the manual A* search.
+    """
+    if not path_nodes:
+        return []
+    if len(path_nodes) == 1:
+        node = G.nodes[path_nodes[0]]
+        return [[float(node["y"]), float(node["x"])]]
+
+    coords: list[list[float]] = []
+    for index, (node_u, node_v) in enumerate(zip(path_nodes, path_nodes[1:])):
+        edge_data = G[node_u][node_v]
+        data = min(edge_data.values(), key=lambda item: float(item.get("length", float("inf"))))
+        geometry = data.get("geometry")
+        if isinstance(geometry, str) and shapely_wkt is not None:
+            try:
+                geometry = shapely_wkt.loads(geometry)
+            except Exception:
+                geometry = None
+
+        if geometry is not None and hasattr(geometry, "coords"):
+            segment = [[float(lat), float(lon)] for lon, lat in geometry.coords]
+        else:
+            segment = [
+                [float(G.nodes[node_u]["y"]), float(G.nodes[node_u]["x"])],
+                [float(G.nodes[node_v]["y"]), float(G.nodes[node_v]["x"])],
+            ]
+
+        if index and segment:
+            segment = segment[1:]
+        coords.extend(segment)
+    return coords
 
 
 def plan_route(
@@ -125,7 +169,7 @@ def plan_route(
                 "from": labels[index],
                 "to": labels[index + 1],
                 "path_nodes": path_nodes,
-                "path_coords": [[G.nodes[n]["y"], G.nodes[n]["x"]] for n in path_nodes],
+                "path_coords": _edge_path_coords(G, path_nodes),
                 "distance_m": result["distance_m"],
             }
         )
